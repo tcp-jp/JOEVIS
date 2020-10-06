@@ -215,15 +215,16 @@ cls
 echo Checking if zip file exists >> %log%
 if exist "%zipFile%" (echo Zip backup file exists >> %log% && goto :eof) 
 if exist "%bakFile%" (echo Raw backup file exists >> %log% && call :zipRawBackup && goto :eof) 
-if not exist "%bakFile%" (echo ** FATAL ERROR ** >> %log% && echo Error: Failed to create raw backup file >> %log% && exit )
+if not exist "%bakFile%" (echo ** FATAL ERROR ** >> %errorLog% && echo Error: Failed to create raw backup file >> %log% && exit )
 goto :eof
 
 
 :zipRawBackup
 cls
-if not exist "%bakFile%" (echo Raw backup does not exist >> %log% && goto :eof)
+if not exist "%bakFile%" (echo Raw backup does not exist >> %log% && call :backupSQL && goto :eof)
 echo Zipping raw backup file >> %log%
 7z a "%zipFile%" "%bakFile%" | find /i "Everything is Ok" >> %log% && echo Raw backup successfully zipped >> %log% 
+call :checkBackupSuccess
 call :checkCorruptZip
 cls
 goto :eof
@@ -294,7 +295,6 @@ call :checkFreeSpace
 call :checkDBHealth
 call :purgeOldBackups
 if NOT [%deviceList%]==[] for %%a in (%deviceList:~0,-1%) do (echo Copying to %%a >> %log% && call :copyToDevice %%a)
-pause
 if NOT [%deviceList%]==[] (for %%a in (%deviceList:~0,-1%) do (
         forfiles -p "\\%%a\JOEVIS" -s -m *.zip -d -%daysToKeep% -c "cmd /c del /q @path" 
         echo Old files purged on %computername% >> %log% && cls))
