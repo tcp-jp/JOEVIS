@@ -36,15 +36,15 @@ JOEVIS.exe written in batch is the first iteration of the JOEVIS application. In
 
 ## The Inner Workings Explained
 The default batch start. Remove prompt, enabledelayedexpansion to use variables within for loops and goto main function
-'''
+```
 @echo off
 setlocal enabledelayedexpansion
 
 goto main
-'''
+```
 
 The main function calls all other subroutines that build the program
-'''
+```
 :main
 call :prelim
 call :maintenance
@@ -62,10 +62,10 @@ if NOT [%deviceList%]==[] (for %%a in (%deviceList:~0,-1%) do (
 echo JOEVIS finished for %backupDate% >> %log%
 echo Terminating >> %log%
 exit
-'''
+```
 
 The prelim is where the variables are defined and requirements checked 
-'''
+```
 :prelim
 cls
 set pwd=C:\JOEVIS\
@@ -95,9 +95,9 @@ cls
 call :checkAlreadyRun
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :checkRequirements
 cls
 echo Checking requirements >> %log% 
@@ -109,10 +109,10 @@ cls
 call :setDNS
 cls
 goto :eof
-'''
+```
 
 
-'''
+```
 :7zip
 cls
 echo Checking for 7-Zip >> %log%
@@ -125,10 +125,10 @@ set path=%path%;%programfiles(x86)%\7-Zip\;
 del %pwd%7-ZipInstaller.exe /f
 cls
 goto :eof
-'''
+```
 
 
-'''
+```
 :scheduledTask
 cls
 echo Checking Scheduled Task exists >> %log%
@@ -136,10 +136,10 @@ schtasks /query /tn "JOEVIS\JOEVIS" | find /i "joevis" || cls && schtasks /creat
 echo.    Task exists >> %log%
 cls
 goto :eof
-'''
+```
 
 
-'''
+```
 :setDNS
 cls
 echo Ensuring DNS settings are correct >> %log%
@@ -150,9 +150,9 @@ netsh interface ip show dns "Ethernet" | find "8.8.8.8" || echo Secondary DNS is
 echo DNS settings are correct>> %log%
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :getNetAddress
 cls
 for /f "tokens=2 delims=:" %%a in ('netsh interface ipv4 show addresses Ethernet ^| find /i "IP"') do (set gateway=%%a)
@@ -161,10 +161,10 @@ for /f "tokens=1,2,3 delims=." %%b in ('echo %gateway%') do (set gateway=%%b.%%c
 echo.    Network address is %gateway% >> %log%
 cls
 goto :eof
-'''
+```
 
 
-'''
+```
 :checkForDevices
 cls
 echo. >> %log%
@@ -181,9 +181,9 @@ set deviceList=%names%
 if [%deviceList%]==[] (echo No devices found >> %log%)
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :checkAlreadyRun
 cls
 if exist "%zipFile%" (echo. >> %log%
@@ -201,9 +201,9 @@ if not [%deviceList%]==[] (echo Remote devices found >> %log%
     call :checkRemoteBackups)
 if exist "%zipFile%" (echo Exiting >> %log% && exit)
 goto :eof
-'''
+```
 
-'''
+```
 :checkRemoteBackups
 cls
 for /f %%a in ("%zipFile%") do (set fileSize=%%~za)
@@ -215,9 +215,9 @@ for %%a in (%deviceList:~0,-1%) do (
             call :copyToDevice %%a)
 echo Finished checking backups on remote devices >> %log%)
 goto :eof
-'''
+```
 
-'''
+```
 :maintenance
 echo. >> %log%
 echo Setting system configuration >> %log%
@@ -233,9 +233,9 @@ sc queryex wuauserv | find /i "stop" || echo Stopping Windows Updates service >>
 echo Disabling Windows Update service >> %log%
 sc config wuauserv start= disabled >> %log% 
 goto :eof
-'''
+```
 
-'''
+```
 :mainSQL
 cls
 call :posCheck
@@ -247,9 +247,9 @@ for %%a in (%passwords:~1,-1%) do (sqlcmd -S %computername%\%instance% -U sa -P 
 echo SQL Finished with errors. Please resolve issues >> %log%
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :posCheck
 cls
 reg query "HKLM\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL" /v CESSQL && cls
@@ -268,9 +268,9 @@ echo ** FATAL ERROR ** >> %log%
 echo Error: Failed to find SQL instance >> %log%
 cls
 exit
-'''
+```
 
-'''
+```
 :backupSQL
 cls
 echo Likely error in SQL. Check logs to resolve >> %log%
@@ -281,9 +281,9 @@ for %%a in %passwords% do (sqlcmd -S %computername%\%instance% -U sa -P %%a -i "
 echo SQL Error(s). Please resolve issues >> %log%
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :checkBackupSuccess
 cls
 echo Checking if zip file exists >> %log%
@@ -291,9 +291,9 @@ if exist "%zipFile%" (echo Zip backup file exists >> %log% && goto :eof)
 if exist "%bakFile%" (echo Raw backup file exists >> %log% && call :zipRawBackup && goto :eof) 
 if not exist "%bakFile%" (echo ** FATAL ERROR ** >> %errorLog% && echo Error: Failed to create raw backup file >> %log% && exit )
 goto :eof
-'''
+```
 
-'''
+```
 :zipRawBackup
 cls
 if not exist "%bakFile%" (echo Raw backup does not exist >> %log% && call :backupSQL && goto :eof)
@@ -303,9 +303,9 @@ call :checkBackupSuccess
 call :checkCorruptZip
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :copyToDevice
 cls
 if not exist "\\%~1\JOEVIS" (md "\\%~1\JOEVIS") && echo JOEVIS directory made on %~1 >> %log%
@@ -320,9 +320,9 @@ for /f "tokens=3 delims= " %%a in ('dir \\%~1\JOEVIS\ /-c 2^>^>%log% ^| find /i 
             copy source "%zipFile%" destination \\%~1\JOEVIS\JOEVIS_Backup_%backupDate%.zip /y && echo Backup copied to %~1 >> %log% && goto :eof) else echo %~1 has not got enough free space to copy backup zip over >> %log%)
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :checkCorruptZip
 cls
 for /f %%a in ("%zipFile%") do (set fileSize=%%~za)
@@ -332,9 +332,9 @@ if %fileSize% LSS 1100 (echo Very small zip file. Creating another in case of co
 del %bakFile% /f
 cls
 goto :eof
-'''
+```
 
-'''
+```
 :checkFreeSpace
 cls
 echo. >> %log%
@@ -348,9 +348,9 @@ for /f %%a in ("%zipFile%") do (set fileSize=%%~za)
 set /a minSizeLeft=%fileSize%*%daysToKeep%
 echo Zip filesize is %fileSize%. Minimum required space set to %minSizeLeft% (%fileSize%*%daysToKeep%) >> %log%
 if %freeSpace% lss %daysToKeep% (echo %computername% is going to run out of space soon >> %log%)
-'''
+```
 
-'''
+```
 :checkDBHealth
 cls
 echo Checking DB health >> %log%
@@ -359,10 +359,10 @@ echo Errors found in DB health >> %log%
 echo Errors found in DB health >> %errorLog%
 cls
 goto :eof
-'''
+```
 
 
-'''
+```
 :purgeOldBackups
 cls
 echo Purging old files >> %log%
@@ -370,9 +370,9 @@ forfiles -p "c:\JOEVIS" -s -m *.* -d -%daysToKeep% -c "cmd /c del /q @path" && e
 echo Local files purged >> %log%
 cls
 goto :eof
-'''
+```
 
-'''
+```
 if NOT [%deviceList%]==[] for %%a in (%deviceList:~0,-1%) do (echo Copying to %%a >> %log% && call :copyToDevice     %%a)
 if NOT [%deviceList%]==[] (for %%a in (%deviceList:~0,-1%) do (
     forfiles -p "\\%%a\JOEVIS" -s -m *.zip -d -%daysToKeep% -c "cmd /c del /q @path"
@@ -380,7 +380,7 @@ if NOT [%deviceList%]==[] (for %%a in (%deviceList:~0,-1%) do (
 echo JOEVIS finished for %backupDate% >> %log% 
 echo Terminating >> %log%
 exit
-'''
+```
 
 -- Automation tool that backs up important data from SQL, checks system configuration settings and posts backups to devices on the network.
 
