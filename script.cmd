@@ -13,6 +13,7 @@ set backupDate=%date:/=-%
 set backupDate=%backupDate:~6,4%-%backupDate:~3,2%-%backupDate:~0,2%
 set bakFile=%pwd%JOEVIS_Backup_%backupDate%.bak
 set zipFile=%pwd%JOEVIS_Backup_%backupDate%.zip
+set remoteZip=JOEVIS\JOEVIS_Backup_%backupDate%.zip
 set log=%pwd%JOEVIS_%backupDate%.log
 set sqlLog=%pwd%JOEVIS_SQL_%backupDate%.log
 set errorLog=%pwd%JOEVIS_Error_%backupDate%.log
@@ -58,8 +59,8 @@ cls
 for /f %%a in ("%zipFile%") do (set fileSize=%%~za)
 for %%a in (%deviceList:~0,-1%) do (
         cls
-        if exist \\%%a\JOEVIS\JOEVIS_Backup_%backupDate%.zip (echo Backup found on %%a >> %log%)
-        if not exist \\%%a\JOEVIS\JOEVIS_Backup_%backupDate%.zip (echo Backup not found on %%a >> %log%
+        if exist \\%%a\%remoteZip% (echo Backup found on %%a >> %log%)
+        if not exist \\%%a\%remoteZip% (echo Backup not found on %%a >> %log%
             echo Attempting to copy over todays backup to %%a >> %log%
             call :copyToDevice %%a)
 echo Finished checking backups on remote devices >> %log%)
