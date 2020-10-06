@@ -131,7 +131,7 @@ echo. >> %log%
 echo Checking for devices on the network >> %log%
 set names=
 for /l %%a in (2,1,253) do ( 
-    for /f "tokens=2 delims=:" %%b in ('nslookup %gateway%%%a 2^>nul ^| find /i "name"') do (
+    for /f "tokens=2 delims=:" %%b in ('nslookup %gateway%%%a 2^>nul ^| find /i "name" | find /i "pos"') do (
         cls
         set store=%%b
         set names=!names!!store:~4,-1!,
