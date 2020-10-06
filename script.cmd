@@ -148,7 +148,7 @@ goto :eof
 :copyToDevice
 cls
 if not exist "\\%~1\JOEVIS" (md "\\%~1\JOEVIS") && echo JOEVIS directory made on %~1 >> %log%
-if exist "\\%~1\JOEVIS\JOEVIS_Backup_%backupDate%.zip" (echo JOEVIS backup found on %~1 >> %log% && goto :eof)
+if exist "\\%~1\%remoteZip%" (echo JOEVIS backup found on %~1 >> %log% && goto :eof)
 echo Checking free space in %~1\JOEVIS\ >> %log%
 for /f "tokens=3 delims= " %%a in ('dir \\%~1\JOEVIS\ /-c 2^>^>%log% ^| find /i "free"') do (set freeSpace=%%a
     cls
@@ -156,7 +156,7 @@ for /f "tokens=3 delims= " %%a in ('dir \\%~1\JOEVIS\ /-c 2^>^>%log% ^| find /i 
     if %freeSpace% gtr %minSizeLeft% (
             cls
             echo JOEVIS backup not found on %~1 >> %log% 
-            copy source "%zipFile%" destination \\%~1\JOEVIS\JOEVIS_Backup_%backupDate%.zip /y && echo Backup copied to %~1 >> %log% && goto :eof) else echo %~1 has not got enough free space to copy backup zip over >> %log%)
+            copy source "%zipFile%" destination \\%~1\%remoteZip% /y && echo Backup copied to %~1 >> %log% && goto :eof) else echo %~1 has not got enough free space to copy backup zip over >> %log%)
 cls
 goto :eof
 
