@@ -1,7 +1,7 @@
 # JOEVIS 
 
 ## What is it?
-JOEVIS.exe written in batch is the first iteration of the JOEVIS application. In version 1.0.0 there is currently only a single run script. This script does the following : 
+JOEVIS.exe written in batch is the first iteration of the JOEVIS application. In version 1.0.0 there is currently only a single run script.
 
 ## What does it do?
 #### A quick rundown...
