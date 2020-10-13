@@ -71,7 +71,6 @@ goto :eof
 :checkRequirements
 cls
 echo Checking requirements >> %log% 
-::nslookup, 7zip
 call :7zip
 cls
 call :scheduledTask
